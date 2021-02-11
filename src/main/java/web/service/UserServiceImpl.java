@@ -1,8 +1,11 @@
 package web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.model.User;
@@ -18,14 +21,15 @@ public class UserServiceImpl implements UserService {
     private UserRepo userRepo;
 
     @Autowired
-    public void setUserRepo(UserRepo userRepo) {
-        this.userRepo = userRepo;
-    }
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public void setUserRepo(UserRepo userRepo) { this.userRepo = userRepo; }
 
     @Override
     public void addUser(User user) {
-        userRepo.addUser(user);
-    }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepo.addUser(user); }
 
     @Override
     public void deleteUser(Long id) {
